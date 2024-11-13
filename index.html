@@ -1,28 +1,282 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width", initial-scale=1.0>
-        <title>RandomPassword</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-        <body>
-            <div class="inputBox">
-                <h2>Random <span>Password</span> Generator</h2>
-                <input type="text" placeholder="Generated Password" id="password" readonly="">
+<html>
+<head>
+  <title>Secure Passphrase Generator</title>
+  <meta name="description" content="Generate secure passphrases easily with PassWizard. Choose your desired security level and options for a customized, strong passphrase.">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
-                <button  id="btn" onclick="getEasyPassword()">Easy Password!</button>
-                <br>
-                <button  id="btn" onclick="getHardPassword()">Hard Password!</button>
-                <button  id="btn" onclick="getHarderPassword()">Harder Password!</button>
-                <button  id="btn" onclick="getInsanePassword()">Insane Password!</button>
-                
-                
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-            </div>
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 500px;
+    }
 
-            
-            <script src="app.js"></script>
-        </body>
+    h1 {
+      color: #a1c4fd;
+      margin-bottom: 1.5rem;
+    }
+
+    .options {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .security-level {
+      background-color: #c2e9fb;
+      color: #333;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border-radius: 5px;
+    }
+
+    .security-level:hover {
+      background-color: #a1c4fd;
+      color: white;
+    }
+
+    .checkbox-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .checkbox-container label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #a1c4fd;
+      font-size: 0.9rem;
+    }
+
+    .password {
+      font-size: 1.5rem;
+      padding: 1rem;
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      word-break: break-all;
+      color: #a1c4fd;
+    }
+
+    .copy-btn {
+      background-color: #c2e9fb;
+      color: #333;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border-radius: 5px;
+    }
+
+    .copy-btn:hover {
+      background-color: #a1c4fd;
+      color: white;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.4rem;
+      color: #777;
+      text-align: center;
+    }
+
+    .info {
+      margin-top: 2rem;
+      font-size: 0.6rem;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>PassPhrase Generator</h1>
+  <div class="info"></div>
+  <div class="options">
+    <button class="security-level" id="easy">Easy</button>
+    <button class="security-level" id="hard">Hard</button>
+    <button class="security-level" id="harder">Harder</button>
+    <button class="security-level" id="insane">Insane</button>
+  </div>
+  <div class="checkbox-container">
+    <label><input type="checkbox" id="numbers"> Numbers</label>
+    <label><input type="checkbox" id="symbols"> Symbols</label>    
+    <label><input type="checkbox" id="capitals"> Capitals</label>
+    <label><input type="checkbox" id="split-words"> Split-Words</label> <!-- New checkbox for Split-Words -->
+  </div>
+  <div class="password" id="password"></div>
+  <button class="copy-btn" id="copy">Copy to Clipboard</button>
+  <div class="footer">
+	      <a href="https://www.linkedin.com/in/matthewrichardson95" target="_blank">Created By Matthew Richardson </a>
+  </div>
+</div>
+
+<script>
+// wordlist
+const words = [
+  "apple", "breeze", "canyon", "dawn", "ember", "frost", "glimmer", "harvest", "island", "jewel",
+  "knight", "legend", "mystic", "noble", "ocean", "peak", "quartz", "river", "starlight", "tide",
+  "unity", "valley", "whisper", "xanadu", "yellow", "zest", "arcade", "butterfly", "crystal",
+  "dew", "echo", "flame", "grove", "haven", "iris", "joy", "kaleidoscope", "luna", "meadow",
+  "nova", "opal", "puzzle", "quiver", "rose", "shadow", "thunder", "umbra", "vista", "wander",
+  "xenia", "yarn", "zenith", "aurora", "bridge", "cluster", "delta", "essence", "fable", "glade",
+  "horizon", "infinity", "jubilee", "kismet", "lotus", "mirage", "nectar", "oracle", "prism",
+  "quest", "reef", "solace", "twilight", "utopia", "veil", "wildfire", "xeric", "yucca", "zephyr",
+  "alchemy", "bloom", "chime", "drift", "effigy", "fjord", "glyph", "hollow", "ignite", "jade",
+  "keystone", "labyrinth", "memento", "nimbus", "oasis", "phantom", "quill", "riddle", "sapphire",
+  "talisman", "undulate", "vortex", "willow", "xenon", "yearn", "zeal", "acorn", "bliss", "cascade",
+  "dandelion", "eclipse", "flutter", "gusto", "haze", "illumine", "jovial", "knoll", "luster",
+  "marble", "obsidian", "pinnacle", "rhapsody", "serene", "tranquil", "unveil", "vivid", "wisp",
+  "xylophone", "yonder", "zodiac", "joy", "bliss", "sorrow", "rage", "calm", "fear", "hope", "envy",
+  "love", "grief", "zen", "pride", "guilt", "angst", "peace", "thrill", "dread", "cheer", "awe",
+  "melancholy", "curiosity", "euphoria", "loneliness", "optimism", "pity", "remorse", "serenity",
+  "surprise", "tension", "warmth", "contentment", "despair", "elation", "frustration", "gratitude",
+  "humility", "jealousy", "nostalgia", "relief", "vigor", "happy", "bake", "boil", "broil", "stir",
+  "fry", "grill", "knead", "mix", "whip", "beat", "chop", "dice", "mince", "slice", "sear", "simmer",
+  "steam", "roast", "poach", "salt", "herb", "spice", "sugar", "flour", "yeast", "meat", "beef",
+  "pork", "fish", "veal", "lamb", "crab", "milk", "cream", "butter", "oil", "olive", "sauce", "pesto",
+  "salsa", "curry", "stew", "soup", "rice", "bean", "corn", "pea", "other", "about", "out", "many",
+  "then", "them", "these", "so", "some", "her", "would", "make", "like", "him", "into", "time", "has",
+  "look", "two", "more", "write", "go", "see", "number", "no", "way", "could", "people", "app", 
+  "array", "cache", "cloud", "code", "data", "debug", "disk", "email", "ethos", "fiber", "flash",
+  "frame", "git", "hack", "host", "html", "http", "https", "icon", "image", "java", "js", "json",
+  "kernel", "lan", "link", "linux", "logic", "loop", "macro", "media", "mega", "merge", "meta",
+  "model", "mongo", "mouse", "mysql", "net", "node", "nosql", "oauth", "pixel", "port", "query",
+  "queue", "mountain", "riverbed", "oceanfront", "volcano", "ravine", "lagoon", "reef", "tundra", "marsh",
+  "glen", "valley", "fjord", "prairie", "archipelago", "peninsula", "savannah", "taiga", "mesa",
+  "delta", "cavern", "scarlet", "cerulean", "amber", "vermilion", "turquoise", "indigo", "lavender",
+  "chartreuse", "golden", "umber", "bronze", "crimson", "ivory", "opaline", "platinum", "aquamarine",
+  "cobalt", "sapphire", "coral", "jade", "asteroid", "galaxy", "nebula", "quasar", "comet", "cosmos",
+  "orion", "pulsar", "meteor", "stardust", "aurora", "planet", "solar", "nova", "orbit", "photon",
+  "radiance", "darkmatter", "satellite", "andromeda", "phoenix", "griffin", "dragon", "unicorn",
+  "manticore", "mermaid", "chupacabra", "sphinx", "basilisk", "direwolf", "kraken", "pegasus",
+  "serpent", "wyrm", "salamander", "chimera", "centaur", "sprite", "behemoth", "hydra", "kindness",
+  "bravery", "wisdom", "serenity", "honor", "loyalty", "patience", "tenacity", "valor", "freedom",
+  "grace", "humility", "curiosity", "joy", "anger", "rage", "ecstasy", "melancholy", "nostalgia",
+  "bliss", "neural", "quantum", "blockchain", "protocol", "compiler", "syntax", "algorithm", "cipher",
+  "encryption", "firewall", "matrix", "processor", "tensor", "emulator", "network", "bios",
+  "cyberspace", "pixel", "payload", "interface", "expedition", "voyage", "journey", "wanderlust",
+  "pilgrimage", "odyssey", "backpacker", "caravan", "paradise", "sanctuary", "roam", "explore",
+  "horizon", "sunrise", "crossroad", "inn", "retreat", "cruise", "mountaineer", "nomad", "saffron",
+  "pistachio", "caviar", "truffle", "brisket", "fondue", "bisque", "sushi", "curry", "chutney",
+  "souffle", "ganache", "cannoli", "paella", "parfait", "tart", "goulash", "macaron", "ciabatta",
+  "focaccia", "academy", "algebra", "analysis", "assessment", "book", "classroom", "curriculum", "degree", "education",
+  "enrollment", "faculty", "grade", "knowledge", "lecture", "mathematics", "pedagogy", "research", 
+  "scholar", "student", "theory", "tutorial", "university", "wisdom", "enlightenment", "literature",
+  "philosophy", "seminar", "study", "syllabus", "tutor", "vocabulary", "writing", "learning",
+  "aerospace", "algorithm", "blueprint", "bridge", "circuit", "design", "engineer", "innovation",
+  "infrastructure", "mechanics", "prototype", "robotics", "simulation", "structure", "system",
+  "technology", "transportation", "turbine", "welding", "analysis", "cad", "data", "efficiency", 
+  "experiment", "fabrication", "hydraulics", "material", "optimization", "process", "software", 
+  "structure", "wiring", "architecture", "integration", "awe", "compassion", "contentment", "despair", "ecstasy", "euphoria", "fear", "frustration",
+  "gratitude", "hope", "happiness", "loneliness", "love", "nostalgia", "optimism", "peace", "regret",
+  "relief", "satisfaction", "serenity", "sympathy", "thrill", "trust", "understanding", "wonder", 
+  "zeal", "agony", "curiosity", "desire", "enthusiasm", "faith", "fascination", "jealousy", 
+  "melancholy", "passion", "sadness", "sorrow", "vulnerability", "worry", "jay","den"
+];
+
+// generator using crypto.getRandomValues
+const getSecureRandomInt = (max) => {
+  const randomBuffer = new Uint32Array(1);
+  crypto.getRandomValues(randomBuffer);
+  return randomBuffer[0] % max;
+};
+
+// get a random word securely
+const getRandomWord = () => words[getSecureRandomInt(words.length)];
+
+// generate passphrase
+const generatePassphrase = (length, includeNumbers, includeSymbols, includeCapitals, splitWords) => {
+  let passphraseParts = [];  // store words and symbols/numbers as separate parts
+
+  for (let i = 0; i < length; i++) {
+    let word = getRandomWord();
+
+    // Capitalize the word if required
+    if (i === 0 && includeCapitals) {
+      word = word.charAt(0).toUpperCase() + word.slice(1);
+    } else if (includeCapitals && getSecureRandomInt(2) === 1) {
+      word = word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    passphraseParts.push(word);  // add the word to the parts array
+
+    // Add a dash if splitWords is enabled
+    if (splitWords && i < length - 1) {
+      passphraseParts.push("-");
+    }
+  }
+
+  // Add numbers randomly if includeNumbers is true
+  if (includeNumbers) {
+    const number = getSecureRandomInt(100);
+    const position = getSecureRandomInt(passphraseParts.length + 1);  // random position in the array
+    passphraseParts.splice(position, 0, number.toString());
+  }
+
+  // Add symbols randomly if includeSymbols is true
+  if (includeSymbols) {
+    const symbols = "!@#$%^&*";
+    const symbol = symbols[getSecureRandomInt(symbols.length)];
+    const position = getSecureRandomInt(passphraseParts.length + 1);
+    passphraseParts.splice(position, 0, symbol);
+  }
+
+  return passphraseParts.join("");  // join parts into final passphrase string
+};
+
+
+// show generated password
+const displayPassphrase = (length) => {
+  const includeNumbers = document.getElementById("numbers").checked;
+  const includeSymbols = document.getElementById("symbols").checked;
+  const includeCapitals = document.getElementById("capitals").checked;
+  const splitWords = document.getElementById("split-words").checked;  // Check if Split-Words is enabled
+  const passphrase = generatePassphrase(length, includeNumbers, includeSymbols, includeCapitals, splitWords);
+  document.getElementById("password").textContent = passphrase;
+};
+
+// button events
+document.getElementById("easy").addEventListener("click", () => displayPassphrase(2));
+document.getElementById("hard").addEventListener("click", () => displayPassphrase(3));
+document.getElementById("harder").addEventListener("click", () => displayPassphrase(4));
+document.getElementById("insane").addEventListener("click", () => displayPassphrase(8));
+
+// copy function
+document.getElementById("copy").addEventListener("click", () => {
+  const password = document.getElementById("password");
+  const range = document.createRange();
+  range.selectNode(password);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand("copy");
+  window.getSelection().removeAllRanges();
+  alert("Password copied to clipboard!");
+});
+</script>
+</body>
 </html>
